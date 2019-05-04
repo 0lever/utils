@@ -7,7 +7,7 @@ requirements = pkg_resources.resource_string(__name__, "requirements.txt")
 requires = requirements.decode().split(os.linesep)
 setup(name='0lever-utils',
 
-      version="0.0.2",
+      version="0.0.3",
 
       url='https://github.com/0lever/utils',
 
@@ -21,7 +21,9 @@ setup(name='0lever-utils',
 
       packages=find_packages(),
 
-      long_description=open('README.rst').read(),
+      long_description=open('README.md').read(),
+
+      long_description_content_type="text/markdown",
 
       package_data={
       },
