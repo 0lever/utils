@@ -5,9 +5,14 @@ from setuptools import setup, find_packages
 
 requirements = pkg_resources.resource_string(__name__, "requirements.txt")
 requires = requirements.decode().split(os.linesep)
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+
 setup(name='0lever-utils',
 
-      version="0.0.3",
+      version="0.0.4",
 
       url='https://github.com/0lever/utils',
 
@@ -21,9 +26,11 @@ setup(name='0lever-utils',
 
       packages=find_packages(),
 
-      long_description=open('README.md').read(),
+      # long_description=open('README.md').read(),
 
-      long_description_content_type="text/markdown",
+      # long_description=long_description,
+
+      # long_description_content_type="text/markdown",
 
       package_data={
       },
