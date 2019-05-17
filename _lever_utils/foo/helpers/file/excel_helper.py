@@ -13,7 +13,7 @@ class Excel(object):
 
     def _check_file(self, filename):
         dir = filename.rsplit(os.sep, 1)[0]
-        if not os.path.exists(dir):
+        if not os.path.exists(dir) and dir != filename:
             os.makedirs(dir)
 
     def dfs2excel(self, dfs, filename, sheetnames=[], connect_type=DEFAULT, gap=1):
