@@ -12,9 +12,9 @@ class Excel(object):
         pass
 
     def _check_file(self, filename):
-        dir = filename.rsplit(os.sep, 1)[0]
-        if not os.path.exists(dir) and dir != filename:
-            os.makedirs(dir)
+        file_dir = filename.rsplit(os.sep, 1)[0]
+        if not os.path.exists(file_dir) and file_dir != filename:
+            os.makedirs(file_dir)
 
     def dfs2excel(self, dfs, filename, sheetnames=[], connect_type=DEFAULT, gap=1):
         """
