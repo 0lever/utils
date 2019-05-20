@@ -9,7 +9,7 @@ chardet==3.0.4
 crcmod==1.7
 cryptography==2.6.1
 DateTime==4.3
-elasticsearch==7.0.0
+elasticsearch==6.3.1
 enum34==1.1.6
 greenlet==0.4.15
 idna==2.8
