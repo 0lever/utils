@@ -47,10 +47,10 @@ class DingDing(object):
                 "msgtype": "markdown",
                 "markdown": {
                     "title": title,
-                    "text": "### {title}  \n> @{at}\n\n> {text}\n > ![]({picUrl})\n  > ###### [详情]({messageUrl}) ".format(
+                    "text": "### {title}  \n> {at}\n\n> {text}\n > ![]({picUrl})\n  > ###### [详情]({messageUrl}) ".format(
                         title=title,
                         text=text,
-                        at=",".join(at),
+                        at=",".join(map(lambda x:"@{at}".format(at=x),at)),
                         picUrl=picUrl,
                         messageUrl=messageUrl
                     )
@@ -60,7 +60,7 @@ class DingDing(object):
                     "isAtAll": False
                 }
             }
-
+        print payload
         return self._do(payload=payload)
 
     def send_actioncard(self, title, text, messageUrl="", picUrl=""):
