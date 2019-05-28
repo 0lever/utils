@@ -4,6 +4,11 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 import os
+import poplib
+from email.parser import Parser
+from email.header import decode_header
+from email.utils import parseaddr
+from datetime import datetime
 
 
 
@@ -52,3 +57,90 @@ class Mail(object):
         except Exception, e:
             send_result = False, e
         return send_result
+
+
+class MailServer(object):
+    SF = "%Y-%m-%d %H:%M:%S"
+    pop3_server = None
+    args_pop_server = None
+    args_user = None
+    args_password = None
+
+    def __init__(self, pop_server, user, password):
+        self.args_pop_server = pop_server
+        self.args_user = user
+        self.args_password = password
+        self._restart()
+
+    def quit(self):
+        if self.pop3_server is not None:
+            self.pop3_server.quit()
+
+    def _restart(self):
+        self.quit()
+        tmp_pop3_server = poplib.POP3(self.args_pop_server)
+        tmp_pop3_server.user(self.args_user)
+        tmp_pop3_server.pass_(self.args_password)
+        self.pop3_server = tmp_pop3_server
+
+    def get(self, *args):
+        self._restart()
+        res = {}
+        for arg in args:
+            if arg == 'stat':
+                res[arg] = self.pop3_server.stat()[0]
+            elif arg == 'list':
+                res[arg] = self.pop3_server.list()
+            elif arg == 'latest':
+                mails = self.pop3_server.list()[1]
+                resp, lines, octets = self.pop3_server.retr(len(mails))
+                msg = Parser().parsestr(b'\r\n'.join(lines))
+                res[arg] = self._parse_message(msg)
+            elif type(arg) == int:
+                mails = self.pop3_server.list()[1]
+                if arg > len(mails):
+                    res[arg] = None
+                    continue
+                resp, lines, octets = self.pop3_server.retr(arg)
+                msg = Parser().parsestr(b'\r\n'.join(lines))
+                res[arg] = self._parse_message(msg)
+            else:
+                res[arg] = None
+        return res
+
+    def _parse_message(self, msg):
+        result = {}
+        # Subject
+        subject_tmp = msg.get('Subject', '')
+        value, charset = decode_header(subject_tmp)[0]
+        if charset:
+            value = value.decode(charset)
+        result['Subject'] = value
+        # 'From', 'To', 'Cc'
+        for header in ['From', 'To', 'Cc']:
+            result[header] = []
+            temp = msg.get(header, '')
+            temp_list = temp.split(',')
+            for i in temp_list:
+                if i == '':
+                    continue
+                name, addr = parseaddr(i)
+                value, charset = decode_header(name)[0]
+                if charset:
+                    value = value.decode(charset)
+                tmp_addr_info = dict(name=value, addr=addr)
+                result[header].append(tmp_addr_info)
+        result['Date'] = datetime.strptime(msg.get('Date', ''), "%a, %d %b %Y %H:%M:%S +0800").strftime(self.SF)
+        result['Files'] = []
+        result['Bodys'] = []
+        for par in msg.walk():
+            name = par.get_filename()
+            if name:
+                data = par.get_payload(decode=True)
+                result['Files'].append(dict(name=name, data=data))
+            else:
+                body = par.get_payload(decode=True)
+                if body is not None:
+                    result['Bodys'].append(dict(body=body))
+
+        return result
