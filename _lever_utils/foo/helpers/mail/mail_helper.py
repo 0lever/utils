@@ -131,7 +131,10 @@ class MailServer(object):
                     value = value.decode(charset)
                 tmp_addr_info = dict(name=value, addr=addr)
                 result[header].append(tmp_addr_info)
-        result['Date'] = datetime.strptime(msg.get('Date', ''), "%a, %d %b %Y %H:%M:%S +0800").strftime(self.SF)
+        try:
+            result['Date'] = datetime.strptime(msg.get('Date', ''), "%a, %d %b %Y %H:%M:%S +0800").strftime(self.SF)
+        except Exception,e:
+            result['Date'] = str(msg.get('Date', ''))
         result['Files'] = []
         result['Bodys'] = []
         for par in msg.walk():
