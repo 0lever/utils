@@ -12,7 +12,7 @@ with open("README.md", "r") as fh:
 
 setup(name='0lever-utils',
 
-      version="0.1.4",
+      version="0.1.5",
 
       url='https://github.com/0lever/utils',
 

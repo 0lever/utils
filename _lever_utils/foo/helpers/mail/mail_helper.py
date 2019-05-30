@@ -75,6 +75,7 @@ class MailServer(object):
     def quit(self):
         if self.pop3_server is not None:
             self.pop3_server.quit()
+            self.pop3_server = None
 
     def _restart(self):
         self.quit()
